@@ -21,7 +21,7 @@
 
 */
 
-package rfc1006
+package tosi
 
 import (
 	"bytes"
