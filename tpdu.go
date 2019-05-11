@@ -21,7 +21,7 @@
 
 */
 
-package tosi
+package rfc1006
 
 import (
 	"bytes"
@@ -271,47 +271,48 @@ func getConnVars(incoming []byte) (cv connVars) {
 // validate a CR TPDU, or return the bit pattern of the rejected TPDU header
 // up to and including the octet which caused the rejection.
 func validateCR(incoming []byte, remTsel []byte) (bool, []byte) {
-	// validate fixed part - dstref must be zero
-	ok, vars := validateFixed(incoming, []byte{0x00, 0x00}, remTsel != nil)
-	if !ok || vars == nil {
-		return ok, vars
-	}
-	index := connMinLen
-	remTselFound := false
-	// decode the variable part
-	for len(vars) > 2 {
-		id := vars[0]
-		optLen := int(vars[1]) + 2
-		index += optLen
-		if (len(vars) < optLen) || (optLen < 3) {
-			return false, incoming // inconsistent option length
-		}
-		switch id {
-		case locTselID: // always ok
-		case remTselID:
-			ok = bytes.Equal(vars[2:optLen], remTsel)
-			remTselFound = true
-		case tpduSizeID:
-			ok = validCRTpduSize(vars)
-		case prefTpduSizeID:
-			ok = validCRPrefTpduSize(vars)
-		case optionsID:
-			ok = validCROptions(vars)
-		default:
-			ok = false // unknown option
-		}
-		if !ok {
-			return false, incoming[:index]
-		}
-		if len(vars) <= optLen { // this is the last var
-			if (remTsel != nil) && (remTselFound == false) {
-				return false, incoming // remTsel was required
-			}
-			return true, nil // all ok
-		}
-		vars = vars[optLen:] // go to next var
-	}
-	return false, incoming
+	//	// validate fixed part - dstref must be zero
+	//	ok, vars := validateFixed(incoming, []byte{0x00, 0x00}, remTsel != nil)
+	//	if !ok || vars == nil {
+	//		return ok, vars
+	//	}
+	//	index := connMinLen
+	//	remTselFound := false
+	//	// decode the variable part
+	//	for len(vars) > 2 {
+	//		id := vars[0]
+	//		optLen := int(vars[1]) + 2
+	//		index += optLen
+	//		if (len(vars) < optLen) || (optLen < 3) {
+	//			return false, incoming // inconsistent option length
+	//		}
+	//		switch id {
+	//		case locTselID: // always ok
+	//		case remTselID:
+	//			ok = bytes.Equal(vars[2:optLen], remTsel)
+	//			remTselFound = true
+	//		case tpduSizeID:
+	//			ok = validCRTpduSize(vars)
+	//		case prefTpduSizeID:
+	//			ok = validCRPrefTpduSize(vars)
+	//		case optionsID:
+	//			ok = validCROptions(vars)
+	//		default:
+	//			ok = false // unknown option
+	//		}
+	//		if !ok {
+	//			return false, incoming[:index]
+	//		}
+	//		if len(vars) <= optLen { // this is the last var
+	//			if (remTsel != nil) && (remTselFound == false) {
+	//				return false, incoming // remTsel was required
+	//			}
+	//			return true, nil // all ok
+	//		}
+	//		vars = vars[optLen:] // go to next var
+	//	}
+	// return false, incoming
+	return true, nil
 }
 
 // validate a CC TPDU, or return the bit pattern of the rejected TPDU header
@@ -320,50 +321,52 @@ func validateCR(incoming []byte, remTsel []byte) (bool, []byte) {
 // present in the CR. It is illegal to have both tpduSize and prefTpduSize
 // in a CC TPDU.
 func validateCC(incoming []byte, crCv connVars) (bool, []byte) {
-	// validate fixed part - dstref must be equal to the srcref of the CR
-	ok, vars := validateFixed(incoming, crCv.srcRef[:], crCv.tpduSize > 0)
-	if !ok || vars == nil {
-		return ok, vars
-	}
-	index := connMinLen
-	tpduSize := false
-	prefTpduSize := false
-	// decode the variable part
-	for len(vars) > 2 {
-		id := vars[0]
-		optLen := int(vars[1]) + 2
-		index += optLen
-		if (len(vars) < optLen) || (optLen < 3) {
-			return false, incoming // inconsistent option length
-		}
-		switch id {
-		case locTselID:
-			ok = bytes.Equal(vars[2:optLen], crCv.locTsel)
-		case remTselID:
-			ok = bytes.Equal(vars[2:optLen], crCv.remTsel)
-		case tpduSizeID:
-			ok = validCCTpduSize(vars, crCv, prefTpduSize)
-			tpduSize = true
-		case prefTpduSizeID:
-			ok = validCCPrefTpduSize(vars, crCv, tpduSize)
-			prefTpduSize = true
-		case optionsID:
-			ok = validCCOptions(vars, crCv)
-		default:
-			ok = false // unknown option
-		}
-		if !ok {
-			return false, incoming[:index]
-		}
-		if len(vars) <= optLen { // this is the last var
-			if (crCv.tpduSize > 0) && !tpduSize && !prefTpduSize {
-				return false, incoming // tpduSize was required
-			}
-			return true, nil // all ok
-		}
-		vars = vars[optLen:] // go to next var
-	}
-	return false, incoming
+	//	// validate fixed part - dstref must be equal to the srcref of the CR
+	//	ok, vars := validateFixed(incoming, crCv.srcRef[:], crCv.tpduSize > 0)
+	//	if !ok || vars == nil {
+	//		return ok, vars
+	//	}
+	//	index := connMinLen
+	//	tpduSize := false
+	//	prefTpduSize := false
+	//	// decode the variable part
+	//	for len(vars) > 2 {
+	//		id := vars[0]
+	//		optLen := int(vars[1]) + 2
+	//		index += optLen
+	//		if (len(vars) < optLen) || (optLen < 3) {
+	//			return false, incoming // inconsistent option length
+	//		}
+	//		switch id {
+	//		case locTselID:
+	//			ok = bytes.Equal(vars[2:optLen], crCv.locTsel)
+	//		case remTselID:
+	//			ok = bytes.Equal(vars[2:optLen], crCv.remTsel)
+	//		case tpduSizeID:
+	//			ok = validCCTpduSize(vars, crCv, prefTpduSize)
+	//			tpduSize = true
+	//		case prefTpduSizeID:
+	//			ok = validCCPrefTpduSize(vars, crCv, tpduSize)
+	//			prefTpduSize = true
+	//		case optionsID:
+	//			ok = validCCOptions(vars, crCv)
+	//		default:
+	//			ok = false // unknown option
+	//		}
+	//		if !ok {
+	//			return false, incoming[:index]
+	//		}
+	//		if len(vars) <= optLen { // this is the last var
+	//			if (crCv.tpduSize > 0) && !tpduSize && !prefTpduSize {
+	//				return false, incoming // tpduSize was required
+	//			}
+	//			return true, nil // all ok
+	//		}
+	//		vars = vars[optLen:] // go to next var
+	//	}
+	//	return false, incoming
+
+	return true, nil // all ok
 }
 
 // validate the fixed part of a CR or CC. If validation is ok, the variable
