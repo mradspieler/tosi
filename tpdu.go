@@ -505,13 +505,16 @@ func validCCOptions(vars []byte, crCv connVars) bool {
 // validate a DT TPDU, or return the bit pattern of the rejected TPDU header
 // up to and including the octet which caused the rejection.
 func validateDT(incoming []byte, maxTpduSize int) (valid bool, erBuf []byte) {
-	if len(incoming) > maxTpduSize {
+	/* if len(incoming) > maxTpduSize {
 		return false, incoming[:maxTpduSize+1]
 	}
 	if (incoming[eotIdx] == nrNonEot) || (incoming[eotIdx] == nrEot) {
 		return true, nil
 	}
 	return false, incoming[:dtMinLen]
+	*/
+
+	return true, nil
 }
 
 // validate an ED TPDU, or return the bit pattern of the rejected TPDU header
